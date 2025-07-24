@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes } = require('discord.js'); // Added REST and Routes
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const http = require('http'); // Import the http module
 
 const DDNET_STATUS_API = "https://api.status.tw/player/name/";
 const DDNET_STATS_API = "https://ddstats.tw/player/json";
@@ -166,7 +167,7 @@ client.on('interactionCreate', async interaction => {
             } else {
                 currentTeeAssemblerString = `player_skin ${skinName}; player_color_body ${effectiveBodyColor}; player_color_feet ${effectiveFeetColor}; player_use_custom_color 1`;
             }
-            
+
 
             const points = playerData.profile.points || 'N/A';
             const totalFinishes = playerData.total_finishes || (playerData.finishes ? playerData.finishes.length : 'N/A');
@@ -276,6 +277,17 @@ client.on('interactionCreate', async interaction => {
             await interaction.editReply(`An error occurred while checking online status for **${playerName}**.`);
         }
     }
+});
+
+// Create a simple HTTP server to keep the process alive
+const PORT = process.env.PORT || 8080; // Use process.env.PORT if available, otherwise 8080
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Discord bot is running and alive!\n');
+});
+
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Web server listening on 0.0.0.0:${PORT}`);
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
