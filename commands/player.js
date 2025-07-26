@@ -63,11 +63,18 @@ module.exports = {
             const effectiveFeetColor = skinfeetColor !== null ? skinfeetColor.toString() : '';
 
             let currentTeeAssemblerString;
+            let renderImageUrl;
+
             if (skinbodyColor === null || skinfeetColor === null) {
                 currentTeeAssemblerString = `player_skin ${skinName}; player_use_custom_color 0`;
+                renderImageUrl = `https://render-tw-skins.deno.dev/render/${encodeURIComponent(skinName)}`;
             } else {
                 currentTeeAssemblerString = `player_skin ${skinName}; player_color_body ${effectiveBodyColor}; player_color_feet ${effectiveFeetColor}; player_use_custom_color 1`;
+                renderImageUrl = `https://render-tw-skins.deno.dev/render/${encodeURIComponent(skinName)}/${effectiveBodyColor}/${effectiveFeetColor}`;
             }
+            
+            // Log the skin API URL here
+            console.log(`Generated Skin API URL: ${renderImageUrl}`);
 
             const points = playerData.profile.points || 'N/A';
             const totalFinishes = playerData.total_finishes || (playerData.finishes ? playerData.finishes.length : 'N/A');
@@ -80,6 +87,7 @@ module.exports = {
                 .setTitle(`📈 Statistics for ${playerNameDisplay}`)
                 .setColor(onlineStatus === 'Online' ? '#00ff00' : '#ff0000')
                 .setDescription(`**Status:** ${onlineStatus}${serverInfo}`)
+                .setThumbnail(renderImageUrl) // Set the render image as the thumbnail
                 .addFields(
                     { name: 'Points', value: `${points}`, inline: true },
                     { name: 'Clan', value: `${clan}`, inline: true },
