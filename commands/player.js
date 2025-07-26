@@ -13,7 +13,7 @@ module.exports = {
 
         try {
             const statsResponse = await fetch(`${API_ENDPOINTS.DDNET_STATS_API}?player=${encodeURIComponent(inputName)}`, {
-                signal: AbortSignal.timeout(3000)
+                signal: AbortSignal.timeout(5000)
             });
             if (!statsResponse.ok) {
                 if (statsResponse.status === 404) {
@@ -31,7 +31,7 @@ module.exports = {
             let serverInfo = '';
             try {
                 const onlineResponse = await fetch(`${API_ENDPOINTS.DDNET_STATUS_API}${encodeURIComponent(inputName)}`, {
-                    signal: AbortSignal.timeout(3000)
+                    signal: AbortSignal.timeout(5000)
                 });
                 if (onlineResponse.ok) {
                     const onlineData = await onlineResponse.json();
@@ -63,18 +63,23 @@ module.exports = {
             const effectiveFeetColor = skinfeetColor !== null ? skinfeetColor.toString() : '';
 
             let currentTeeAssemblerString;
-            let renderImageUrl;
-
             if (skinbodyColor === null || skinfeetColor === null) {
                 currentTeeAssemblerString = `player_skin ${skinName}; player_use_custom_color 0`;
-                renderImageUrl = `https://render-tw-skins.deno.dev/render/${encodeURIComponent(skinName)}`;
             } else {
                 currentTeeAssemblerString = `player_skin ${skinName}; player_color_body ${effectiveBodyColor}; player_color_feet ${effectiveFeetColor}; player_use_custom_color 1`;
-                renderImageUrl = `https://render-tw-skins.deno.dev/render/${encodeURIComponent(skinName)}/${effectiveBodyColor}/${effectiveFeetColor}`;
             }
-            
-            // Log the skin API URL here
-            console.log(`Generated Skin API URL: ${renderImageUrl}`);
+
+            // Generate skin image URL (simple approach without pre-validation)
+            let skinImageUrl = null;
+            if (skinName && skinName !== 'N/A' && skinName !== 'default') {
+                if (skinbodyColor !== null && skinfeetColor !== null) {
+                    // Use custom colors
+                    skinImageUrl = `https://render-tw-skins.deno.dev/render/${encodeURIComponent(skinName)}/${skinbodyColor}/${skinfeetColor}`;
+                } else {
+                    // Use default colors (0 for both body and feet)
+                    skinImageUrl = `https://render-tw-skins.deno.dev/render/${encodeURIComponent(skinName)}/0/0`;
+                }
+            }
 
             const points = playerData.profile.points || 'N/A';
             const totalFinishes = playerData.total_finishes || (playerData.finishes ? playerData.finishes.length : 'N/A');
@@ -87,16 +92,22 @@ module.exports = {
                 .setTitle(`📈 Statistics for ${playerNameDisplay}`)
                 .setColor(onlineStatus === 'Online' ? '#00ff00' : '#ff0000')
                 .setDescription(`**Status:** ${onlineStatus}${serverInfo}`)
-                .setThumbnail(renderImageUrl) // Set the render image as the thumbnail
                 .addFields(
                     { name: 'Points', value: `${points}`, inline: true },
                     { name: 'Clan', value: `${clan}`, inline: true },
                     { name: 'Country', value: `${country}`, inline: true },
                     { name: 'Total Finishes', value: `${totalFinishes}`, inline: true },
                     { name: 'Total Playtime', value: `${totalPlayTimeFormatted}`, inline: true },
-                    { name: 'Skin Name', value: `${skinName}`, inline: true }
+                    { name: 'Skin Name', value: `${skinName}`, inline: true },
+                    
                 );
-
+            
+            
+            // Add skin image as thumbnail if available
+            if (skinImageUrl) {
+                embed.setThumbnail(skinImageUrl);
+            }
+            
             if (lastSeenTimestamp) {
                 const lastSeenDate = new Date(lastSeenTimestamp).toLocaleString();
                 embed.addFields({ name: 'Last Seen', value: lastSeenDate, inline: true });
