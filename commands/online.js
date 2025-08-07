@@ -16,7 +16,7 @@ module.exports = {
                 signal: AbortSignal.timeout(3000)
             });
             if (!response.ok) {
-                return interaction.editReply(`The DDNet status API might be down or unreachable (Status: ${response.status}). Please retry in a few minutes. If this persists, the API might be experiencing issues like ETIMEDOUT or EHOSTUNREACH.`);
+                return interaction.editReply(`❗ ${inputName} is not found.`);
             }
             const data = await response.json();
 
@@ -52,4 +52,5 @@ module.exports = {
             await interaction.editReply(errorMessage);
         }
     }
+
 };
