@@ -33,7 +33,8 @@ module.exports = {
 
         let statusDescription = '';
         let embedColor = '#FFD700';
-
+        const botGuildCount = interaction.client.guilds.cache.size;
+        
         statusDescription += "**Server Pings:**\n";
         const serversToPing = [
             { host: 'master1.ddnet.org', name: 'master1.ddnet.org' },
@@ -44,7 +45,7 @@ module.exports = {
             { host: 'codedoc.ddnet.org', name: 'codedoc.ddnet.org' },
             { host: 'kog.tw', name: 'kog.tw' },
         ];
-
+        statusDescription += `**Bot is in ${botGuildCount} servers.**\n\n`;
         const pingPromises = serversToPing.map(server => pingServer(server.host));
         const pingResults = await Promise.all(pingPromises);
 
