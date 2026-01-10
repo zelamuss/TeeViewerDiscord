@@ -7,7 +7,7 @@ const playerCommand = require('./commands/player');
 const onlineCommand = require('./commands/online');
 const statusCommand = require('./commands/status');
 const clanCommand = require('./commands/clan');
-
+const clanCommand = require('./commands/serverlist');
 // Define API Endpoints and other shared constants
 const API_ENDPOINTS = {
     DDNET_STATUS_API: "https://api.status.tw/player/name/",
@@ -80,6 +80,7 @@ const commands = [
             },
         ],
     },
+    
 ];
 
 client.once('ready', async () => {
@@ -134,5 +135,6 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Web server listening on 0.0.0.0:${PORT}`);
 });
+
 
 client.login(process.env.DISCORD_BOT_TOKEN);
