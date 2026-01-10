@@ -80,6 +80,10 @@ const commands = [
             },
         ],
     },
+    {
+        name: 'serverlisttypeshit',
+        description: 'Admin Only',
+    },
     
 ];
 
@@ -138,3 +142,4 @@ server.listen(PORT, '0.0.0.0', () => {
 
 
 client.login(process.env.DISCORD_BOT_TOKEN);
+
